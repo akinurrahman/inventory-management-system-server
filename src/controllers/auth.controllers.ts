@@ -1,7 +1,11 @@
 import { User } from "../models/user.mode";
 import asyncHandler from "../utils/async-handler";
 
-export const registerApi = asyncHandler(async (req, res) => {
-  
-   const user = await User.findOne({ role: "admin" });
-});
+export const loginApi = asyncHandler(async (req, res) => {});
+
+export const forgotPasswordApi = asyncHandler(async (req, res) => {});
+
+export const resetPasswordApi = asyncHandler(async (req, res) => {});
+
+export const makeStaffApi = asyncHandler(async (req, res) => {});
+

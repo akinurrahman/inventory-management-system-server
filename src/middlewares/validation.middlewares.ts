@@ -1,7 +1,7 @@
 import z from "zod";
 import { Request, Response, NextFunction } from "express";
 
-export const validateInput = (schema: z.ZodSchema<any>) => {
+export const validateBody = (schema: z.ZodSchema<any>) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body);
 
