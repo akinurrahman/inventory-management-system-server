@@ -4,6 +4,8 @@ import config from "config";
 import morgan from "morgan";
 import helmet from "helmet";
 import v1Routes from "./routes/v1";
+import errorHandler from "./middlewares/error.middlewares";
+import requestLogger from "./middlewares/request-logger.middlewares";
 
 const app = express();
 
@@ -14,9 +16,9 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 if (nodeEnv === "development") {
-  app.use(morgan("dev"));
-} else if (nodeEnv === "production") {
-  app.use(morgan("combined"));
+  app.use(morgan("dev")); // quick, readable logs for dev
+} else {
+  app.use(requestLogger); // structured logs for prod
 }
 
 app.use(
@@ -33,4 +35,6 @@ app.use("/api/v1", v1Routes);
 app.get("/health", (_req: Request, res: Response) =>
   res.status(200).json({ status: "ok" })
 );
+
+app.use(errorHandler);
 export default app;

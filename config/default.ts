@@ -9,4 +9,6 @@ export default {
   FRONTEND_URLS: process.env.FRONTEND_URLS
     ? process.env.FRONTEND_URLS.split(",")
     : [],
+  ADMIN_EMAIL : process.env.ADMIN_EMAIL || "",
+  
 };
