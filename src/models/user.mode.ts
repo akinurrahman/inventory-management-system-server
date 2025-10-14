@@ -10,9 +10,12 @@ export interface IUser extends Document {
   role: "admin" | "staff";
   isActive: boolean;
   lastLogin?: Date;
+  otp : string;
+  otpExpiry : Date;
   comparePassword: (candidatePassword: string) => Promise<boolean>;
   generateAccessToken: () => Promise<string>;
   generateRefreshToken: () => Promise<string>;
+  hashOtp: (plainOtp:string) => Promise<void>;
 }
 
 
@@ -23,6 +26,9 @@ const userSchema = new mongoose.Schema<IUser>({
     role: {type: String, enum: ["admin", "staff"], default: "staff"},
     isActive: {type: Boolean, default: true},
     lastLogin: {type: Date},
+
+    otp: {type: String, select: false},
+    otpExpiry: {type: Date, select: false},
 
 },{timestamps:true});
 
@@ -59,6 +65,14 @@ userSchema.methods.generateRefreshToken = async function () {
   return token;
 }
 
+
+userSchema.methods.hashOtp = async function (plainOtp:string) {
+ const hashedOtp = await bcrypt.hash(plainOtp, 12);
+ this.otp = hashedOtp;
+
+ this.otpExpiry = new Date(Date.now() + 1000 * 60 * 10)
+  
+}
 
 
 export const User = mongoose.model<IUser>("User", userSchema);
