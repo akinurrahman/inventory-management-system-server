@@ -1,5 +1,6 @@
 import z from "zod";
 import { Request, Response, NextFunction } from "express";
+import log from "../utils/logger";
 
 export const validateBody = (schema: z.ZodSchema<any>) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -10,7 +11,7 @@ export const validateBody = (schema: z.ZodSchema<any>) => {
 
       const debugErrors = result.error.issues;
 
-      console.log("Debug Errors:", debugErrors); // optional logging
+      log.info(debugErrors); // optional logging
 
       return res.status(400).json({
         message: displayErrors[0] || "Validation failed", // first error for UI

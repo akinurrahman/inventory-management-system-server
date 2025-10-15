@@ -17,12 +17,12 @@ export const forgotPasswordRequestOtpSchema = z.object({
 
 export const forgotPasswordVerifyOtpSchema = z.object({
   email: z.email("Invalid email address"),
-  otp: z.string().length(6, "OTP must be 6 characters long"),
+  otp: z.string("Otp is required").length(6, "OTP must be 6 characters long"),
 });
 
 export const forgotPasswordResetPasswordSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "New Password must be at least 8 characters long"),
+  resetToken : z.string("Reset token is required"),
+  password: z.string("password is required").min(8, "New Password must be at least 8 characters long"),
 });
 
 export const resetPasswordSchema = z.object({

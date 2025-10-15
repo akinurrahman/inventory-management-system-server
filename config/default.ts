@@ -10,6 +10,7 @@ export default {
     ? process.env.FRONTEND_URLS.split(",")
     : [],
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || "",
-  ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET ,
-  REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET ,
+  ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
+  RESET_TOKEN_SECRET: process.env.RESET_TOKEN_SECRET,
 };
