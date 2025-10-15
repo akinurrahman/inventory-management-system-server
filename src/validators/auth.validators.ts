@@ -20,6 +20,10 @@ export const forgotPasswordVerifyOtpSchema = z.object({
   otp: z.string("Otp is required").length(6, "OTP must be 6 characters long"),
 });
 
+export const forgotPasswordResendOtpSchema = z.object({
+  email: z.email("Invalid email address"),
+});
+
 export const forgotPasswordResetPasswordSchema = z.object({
   resetToken : z.string("Reset token is required"),
   password: z.string("password is required").min(8, "New Password must be at least 8 characters long"),
@@ -41,3 +45,4 @@ export type ForgotPasswordOtpVerifyInput = z.infer<typeof forgotPasswordVerifyOt
 export type ForgotPasswordResetInput = z.infer<typeof forgotPasswordResetPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type MakeStaffInput = z.infer<typeof makeStaffSchema>;
+export type ForgotPasswordResendOtpInput = z.infer<typeof forgotPasswordResendOtpSchema>;

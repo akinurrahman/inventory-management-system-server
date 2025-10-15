@@ -103,7 +103,7 @@ export const forgotPasswordResetPasswordApi = asyncHandler(async (req, res) => {
 
   const user = await User.findById(decoded.userId).select("+resetToken");
   if(!user || !user.isActive){
-    throw new UnauthorizedError("Your account has been blocked! contact admin.")
+    throw new UnauthorizedError("Your account has been blocked! you can't change password.")
   }
 
   if(user.resetToken !== resetToken){
@@ -117,6 +117,32 @@ export const forgotPasswordResetPasswordApi = asyncHandler(async (req, res) => {
   sendResponse(res, user, "Password reset successful");
 
 });
+
+export const forgotPasswordResendOtpApi = asyncHandler(async (req, res) => {
+  const {email} = req.body;
+
+  const user = await User.findOne({email})
+
+  if(!user) throw new BadRequestError("Invalid email address")
+
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      await user.hashOtp(otp);
+
+      user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+
+      await user.save();
+
+      await sendEmail({
+        to: user.email,
+        subject: "Password Reset OTP",
+        text: `Your OTP for password reset is ${user.otp}. It is valid for 10 minutes.`,
+        html: authEmailTemplates.forgotPasswordRequestEmail(user.fullName, otp),
+      });
+
+      sendResponse(res , undefined, "OTP resend succesfully!")
+  
+  
+})
 
 export const resetPasswordApi = asyncHandler(async (req, res) => {});
 

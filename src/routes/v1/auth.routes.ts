@@ -22,6 +22,11 @@ router
     authController.forgotPasswordOtpVerifyApi
   )
   .post(
+    "/forgot-password/resend-otp",
+    validateBody(authValidation.forgotPasswordResendOtpSchema),
+    authController.forgotPasswordResendOtpApi
+  )
+  .post(
     "/forgot-password/reset-password",
     validateBody(authValidation.forgotPasswordResetPasswordSchema),
     authController.forgotPasswordResetPasswordApi
