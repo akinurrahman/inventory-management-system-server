@@ -8,9 +8,9 @@ export interface ISupplier extends mongoose.Document {
 }
 
 const supplierSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  phone: { type: String, required : true},
-  email: { type: String },
+  name: { type: String, required: true,  },
+  phone: { type: String, required : true, unique : true},
+  email: { type: String, unique : true },
   address: { type: String },
 });
 
