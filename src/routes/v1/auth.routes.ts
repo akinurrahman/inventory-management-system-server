@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as authValidation from "../../validators/auth.validators";
 import { validateBody } from "../../middlewares/validation.middlewares";
 import * as authController from "../../controllers/auth.controllers";
+import * as authMiddleware from '../../middlewares/auth.middlewares'
 
 const router = Router();
 
@@ -31,6 +32,12 @@ router
     validateBody(authValidation.forgotPasswordResetPasswordSchema),
     authController.forgotPasswordResetPasswordApi
   )
+
+
+  router.use(authMiddleware.requireAuth);
+
+  router.use(authMiddleware.requireRoles(["admin"]));
+  router
   .post(
     "/reset-password",
     validateBody(authValidation.resetPasswordSchema),

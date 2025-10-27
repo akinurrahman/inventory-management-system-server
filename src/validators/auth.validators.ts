@@ -36,6 +36,7 @@ export const resetPasswordSchema = z.object({
 
 export const makeStaffSchema = z.object({
   email: z.email("Invalid email address"),
+  fullName: z.string("Name is required"),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

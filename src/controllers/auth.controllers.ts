@@ -144,6 +144,41 @@ export const forgotPasswordResendOtpApi = asyncHandler(async (req, res) => {
   
 })
 
-export const resetPasswordApi = asyncHandler(async (req, res) => {});
+export const resetPasswordApi = asyncHandler(async (req, res) => {
+  const user = req.user;
+  if(!user) throw new BadRequestError("You must be logged in to reset your password");
 
-export const makeStaffApi = asyncHandler(async (req, res) => {});
+  // get the curr and new password
+  // decode the curr pass if fail throw error else procced
+  // save the new password to db
+  // invalidate all curr active sessions
+  // send email to the user
+  // return success message 
+});
+
+
+export const makeStaffApi = asyncHandler(async (req, res) => {
+  const {fullName, email} = req.body;
+
+  const user = await User.findOne({email})
+
+  if(user){
+    throw new BadRequestError("Staff with this email already exists")
+  }
+
+
+  const password = Math.random().toString(36).slice(-8);
+
+  const newUser = await User.create({
+    fullName, password, email, role: 'staff', isActive: true, 
+  })
+
+  await sendEmail({
+    to : email,
+    subject : "Staff Account Created",
+    text : `Your staff account has been created. Your login email is ${email} and password is ${password}. Please change your password after logging in.`,
+    html : authEmailTemplates.makeStaffEmail(fullName, email, password)
+  })
+
+  sendResponse(res, newUser, "Staff account created successfully");
+});
