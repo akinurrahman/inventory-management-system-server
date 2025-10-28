@@ -1,6 +1,13 @@
 import { Supplier } from "../models/suppliers.models";
-import { BadRequestError, sendResponse } from "../utils";
+import {
+  BadRequestError,
+  createPagination,
+  getPaginationParams,
+  sendResponse,
+} from "../utils";
 import asyncHandler from "../utils/async-handler";
+
+import { pickBy } from "lodash";
 
 export const createSupplier = asyncHandler(async (req, res) => {
   const { name, email, phone, address } = req.body;
@@ -22,19 +29,59 @@ export const createSupplier = asyncHandler(async (req, res) => {
     address,
   });
 
-  sendResponse(res, newSupplier, "Supplier created successfully!")
+  sendResponse(res, newSupplier, "Supplier created successfully!");
 });
 
 export const getAllSuppliers = asyncHandler(async (req, res) => {
-    const suppliers = await Supplier.find()
+  const { page, limit, skip } = getPaginationParams(req.query);
 
-    if(suppliers.length < 1){
-        return sendResponse(res, [], "No supplier found")
-    }
+  const [suppliers, total] = await Promise.all([
+    Supplier.find().skip(skip).limit(limit).lean(),
+    Supplier.countDocuments(),
+  ]);
 
-    sendResponse(res, suppliers, "All suppliers fetched successfully")
+  const pagination = createPagination({
+    page,
+    limit,
+    total,
+  });
+
+  sendResponse(
+    res,
+    suppliers,
+    "Suppliers fetched successfully!",
+    200,
+    pagination
+  );
 });
 
-export const updateSupplier = asyncHandler(async (req, res) => {});
+export const updateSupplier = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone, address } = req.body;
 
-export const deleteSupplier = asyncHandler(async (req, res) => {});
+  const updates = pickBy(
+    { name, email, phone, address },
+    (value: string | undefined) => value !== undefined
+  );
+
+  const supplier = await Supplier.findByIdAndUpdate(id, updates, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!supplier) {
+    throw new BadRequestError("Supplier not found");
+  }
+
+  sendResponse(res, supplier, "Supplier updated successfully!");
+});
+
+export const deleteSupplier = asyncHandler(async (req, res) => {
+  const supplier = await Supplier.findByIdAndDelete(req.params.id);
+
+  if (!supplier) {
+    throw new BadRequestError("Supplier not found");
+  }
+
+  sendResponse(res, supplier, "Supplier deleted successfully!");
+});

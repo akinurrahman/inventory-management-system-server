@@ -59,8 +59,9 @@ userSchema.methods.comparePassword = async function (
 
 userSchema.methods.generateAccessToken = async function () {
   const accessTokenSecret = config.get<string>("ACCESS_TOKEN_SECRET");
+  const nodeEnv = config.get<string>("NODE_ENV");
   const payload = { _id: this._id, role: this.role };
-  const token = jwt.sign(payload, accessTokenSecret, { expiresIn: "15m" });
+  const token = jwt.sign(payload, accessTokenSecret, { expiresIn: nodeEnv === "production" ? "15m" : "7d" });
 
   return token;
 };
