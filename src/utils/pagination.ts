@@ -44,7 +44,7 @@ export const calculateSkip = (page: number, limit: number): number => {
   return (page - 1) * limit;
 };
 
-export const getPaginationParams = (query: any) => {
+export const getPaginationParams = (query: Record<string, string | string[]>) => {
   const page = parseInt(query.page as string) || 1;
   const limit = parseInt(query.limit as string) || 10;
   const skip = calculateSkip(page, limit);

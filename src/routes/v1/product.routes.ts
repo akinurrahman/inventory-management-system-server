@@ -14,7 +14,7 @@ router
   .post(
     authMiddleware.requireRoles(["admin", "staff"]),
     validateBody(productValidators.productSchema),
-    productController.createPrduct
+    productController.createProduct
   )
   .get(
     authMiddleware.requireRoles(["admin", "staff"]),
