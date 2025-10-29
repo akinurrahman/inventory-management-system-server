@@ -10,24 +10,7 @@ import asyncHandler from "../utils/async-handler";
 import { pickBy } from "lodash";
 
 export const createSupplier = asyncHandler(async (req, res) => {
-  const { name, email, phone, address } = req.body;
-
-  const supplier = await Supplier.findOne({
-    $or: [{ phone }, ...(email ? [{ email }] : [])],
-  });
-
-  if (supplier) {
-    throw new BadRequestError(
-      "Supplier with given phone or email already exists"
-    );
-  }
-
-  const newSupplier = await Supplier.create({
-    name,
-    email,
-    phone,
-    address,
-  });
+  const newSupplier = await Supplier.create(req.body);
 
   sendResponse(res, newSupplier, "Supplier created successfully!");
 });

@@ -12,7 +12,7 @@ router.use(authMiddleware.requireAuth);
 router
   .route("/")
   .post(
-    authMiddleware.requireRoles(["admin"]),
+    authMiddleware.requireRoles(["admin", "staff"]),
     validateBody(productValidators.productSchema),
     productController.createPrduct
   )
@@ -25,7 +25,7 @@ router
   .route("/:id")
   .patch(
     authMiddleware.requireRoles(["admin", "staff"]),
-    validateBody(productValidators.productSchema),
+    validateBody(productValidators.productSchema.partial()),
     productController.updateProduct
   )
   .delete(

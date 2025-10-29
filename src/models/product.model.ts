@@ -20,8 +20,12 @@ export interface IProduct extends mongoose.Document {
 
 const productSchema = new mongoose.Schema<IProduct>(
   {
-    sku: { type: String, required: true, unique: true },
-    name: { type: String, required: true },
+    sku: { type: String, unique: true, immutable: true },
+    name: {
+      type: String,
+      required: true,
+      unique: [true, "Product name must be unique"],
+    },
     description: { type: String },
     stock: { type: Number, required: true },
     minStock: { type: Number, default: 0, min: 0 }, // to send low stock alerts
@@ -45,11 +49,13 @@ const productSchema = new mongoose.Schema<IProduct>(
       ref: "User",
       required: true,
     },
-    supplierIds: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Supplier",
-      required: true,
-    }],
+    supplierIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Supplier",
+        required: true,
+      },
+    ],
   },
   { timestamps: true }
 );
