@@ -34,7 +34,13 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   sendResponse(res, product.data, product.message);
 });
 
-export const getProductUpdateRequests = asyncHandler(async (req, res) => {});
+export const getProductUpdateRequests = asyncHandler(async (req, res) => {
+  const query = req.query as Record<string, string | string[]>;
+
+  const { data, message, pagination } =
+    await productService.getProductApprovalRequests(query);
+  sendResponse(res, data, message, 200, pagination);
+});
 
 export const approveProductUpdateRequest = asyncHandler(async (req, res) => {});
 
