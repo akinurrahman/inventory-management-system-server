@@ -23,11 +23,6 @@ export const productSchema = z.object({
     .nonempty("At least one supplier is required"),
 });
 
-export const productUpdateRequestRejectSchema = z.object({
-  reason: z.string().min(1, "Rejection reason is required"),
-});
+
 
 export type ProductInput = z.infer<typeof productSchema>;
-export type ProductUpdateRequestRejectInput = z.infer<
-  typeof productUpdateRequestRejectSchema
->;
