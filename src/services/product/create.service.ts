@@ -15,6 +15,7 @@ export const createProduct = async (user: IUser, productData: ProductInput) => {
         createdBy: user._id,
         updatedBy: user._id,
       },
+      requestedBy : user._id,
     });
 
     return {

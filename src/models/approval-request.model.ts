@@ -9,7 +9,7 @@ export interface IApprovalRequest extends mongoose.Document {
   status: "pending" | "approved" | "rejected";
   reason?: string;
   requestedBy: mongoose.Schema.Types.ObjectId;
-  approvedBy?: mongoose.Schema.Types.ObjectId;
+  processedBy?: mongoose.Schema.Types.ObjectId;
 }
 
 const approvalRequestSchema = new mongoose.Schema<IApprovalRequest>(
@@ -27,7 +27,6 @@ const approvalRequestSchema = new mongoose.Schema<IApprovalRequest>(
       type: String,
       required: true,
       enum: Object.values(APPROVAL_ACTION),
-      
     },
     payload: {
       type: mongoose.Schema.Types.Mixed, // stores the data related to the request
@@ -47,7 +46,7 @@ const approvalRequestSchema = new mongoose.Schema<IApprovalRequest>(
       ref: "User",
       required: true,
     },
-    approvedBy: {
+    processedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },

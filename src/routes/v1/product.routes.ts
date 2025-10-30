@@ -40,18 +40,6 @@ router
     productController.getProductUpdateRequests
   );
 
-router
-  .route("/requests/:id")
-  .patch(
-    authMiddleware.requireRoles(["admin"]),
-    validateBody(productValidators.productUpdateRequestRejectSchema),
-    productController.rejectProductUpdateRequest
-  );
 
-router.patch(
-  "/requests/:id/approve",
-  authMiddleware.requireRoles(["admin"]),
-  productController.approveProductUpdateRequest
-);
 
 export default router;

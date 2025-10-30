@@ -6,6 +6,8 @@ export const createProduct = asyncHandler(async (req, res) => {
   const user = req.user;
   const body = req.body;
 
+  console.log('body', body);
+
   const result = await productService.createProduct(user, body);
   sendResponse(res, result.data, result.message);
 });
@@ -42,6 +44,4 @@ export const getProductUpdateRequests = asyncHandler(async (req, res) => {
   sendResponse(res, data, message, 200, pagination);
 });
 
-export const approveProductUpdateRequest = asyncHandler(async (req, res) => {});
 
-export const rejectProductUpdateRequest = asyncHandler(async (req, res) => {});
