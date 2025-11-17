@@ -2,9 +2,29 @@ import { Session } from "../../models/session.model";
 import { User } from "../../models/user.mode";
 import { UnauthorizedError } from "../../utils";
 
-export async function createSession(payload:any) {
-  return Session.create(payload);
-}
+export const createSession = async ({
+  userId,
+  refreshToken,
+  ip,
+  userAgent,
+  location,
+}: {
+  userId: string;
+  refreshToken: string;
+  ip?: string;
+  userAgent?: string;
+  location?: string;
+}) => {
+  return Session.create({
+    userId,
+    refreshToken,
+    ip,
+    userAgent,
+    location,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    isActive: true,
+  });
+};
 
 export async function rotateRefreshToken(refreshToken: string) {
   const session = await Session.findOne({ refreshToken, isActive: true });

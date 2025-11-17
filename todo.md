@@ -1,0 +1,1 @@
+1. create the api to get auth activitiy 
