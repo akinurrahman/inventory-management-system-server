@@ -2,7 +2,7 @@ import { Router } from "express";
 import * as authValidation from "../../validators/auth.validators";
 import { validateBody } from "../../middlewares/validation.middlewares";
 import * as authController from "../../controllers/auth.controllers";
-import * as authMiddleware from '../../middlewares/auth.middlewares'
+import * as authMiddleware from "../../middlewares/auth.middlewares";
 
 const router = Router();
 
@@ -10,43 +10,49 @@ router
   .post(
     "/login",
     validateBody(authValidation.loginSchema),
-    authController.loginApi
+    authController.login
   )
   .post(
     "/forgot-password/request-otp",
     validateBody(authValidation.forgotPasswordRequestOtpSchema),
-    authController.forgotPasswordRequestApi
+    authController.forgotPasswordRequest
   )
   .post(
     "/forgot-password/verify-otp",
     validateBody(authValidation.forgotPasswordVerifyOtpSchema),
-    authController.forgotPasswordOtpVerifyApi
+    authController.forgotPasswordOtpVerify
   )
   .post(
     "/forgot-password/resend-otp",
     validateBody(authValidation.forgotPasswordResendOtpSchema),
-    authController.forgotPasswordResendOtpApi
+    authController.forgotPasswordResendOtp
   )
   .post(
     "/forgot-password/reset-password",
     validateBody(authValidation.forgotPasswordResetPasswordSchema),
-    authController.forgotPasswordResetPasswordApi
-  )
+    authController.forgotPasswordResetPassword
+  );
 
+router.use(authMiddleware.requireAuth);
 
-  router.use(authMiddleware.requireAuth);
+router.post(
+  "/refresh-token",
+  validateBody(authValidation.logoutSchema),
+  authController.refreshToken
+);
+router.post("/logout", validateBody(authValidation.logoutSchema), authController.logout);
 
-  router.use(authMiddleware.requireRoles(["admin"]));
-  router
+router.use(authMiddleware.requireRoles(["admin"]));
+router
   .post(
     "/reset-password",
     validateBody(authValidation.resetPasswordSchema),
-    authController.resetPasswordApi
+    authController.resetPassword
   )
   .post(
     "/make-staff",
     validateBody(authValidation.makeStaffSchema),
-    authController.makeStaffApi
+    authController.makeStaff
   );
 
 export default router;

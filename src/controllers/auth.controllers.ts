@@ -1,14 +1,9 @@
 import asyncHandler from "../utils/async-handler";
-import { BadRequestError, sendResponse, UnauthorizedError } from "../utils";
-import * as authServices from "../services/auth.service";
+import { BadRequestError, sendResponse } from "../utils";
 import { getLocationFromIP } from "../services/geo.service";
-import { User } from "../models/user.mode";
-import { sendEmail } from "../services/email.service";
-import * as authEmailTemplates from "../emails/auth.emails";
-import jwt from "jsonwebtoken";
-import config from "config";
+import * as authServices from "../services/auth";
 
-export const loginApi = asyncHandler(async (req, res) => {
+export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const { user, accessToken, refreshToken } = await authServices.loginUser(
@@ -25,7 +20,6 @@ export const loginApi = asyncHandler(async (req, res) => {
 
   await authServices.createSession({
     userId: user._id as string,
-    accessToken,
     refreshToken,
     ip,
     userAgent,
@@ -41,144 +35,73 @@ export const loginApi = asyncHandler(async (req, res) => {
   );
 });
 
-export const forgotPasswordRequestApi = asyncHandler(async (req, res) => {
+export const forgotPasswordRequest = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    throw new BadRequestError("Invalid email address");
-  }
-
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  await user.hashOtp(otp);
-
-  user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min
-
-  await user.save();
-
-  await sendEmail({
-    to: user.email,
-    subject: "Password Reset OTP",
-    text: `Your OTP for password reset is ${user.otp}. It is valid for 10 minutes.`,
-    html: authEmailTemplates.forgotPasswordRequestEmail(user.fullName, otp),
-  });
+  await authServices.requestOtp(email);
 
   sendResponse(res, undefined, "OTP sent to your email");
 });
 
-export const forgotPasswordOtpVerifyApi = asyncHandler(async (req, res) => {
+export const forgotPasswordOtpVerify = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
 
-  const user = await User.findOne({ email }).select("+otp +otpExpiry");
-
-  if (!user) throw new BadRequestError("Invalid email address");
-  if (!user.otpExpiry || user.otpExpiry.getTime() < Date.now())
-    throw new BadRequestError("Otp expired or already used! ");
-
-  const isOtpMatched = await user.compareOtp(otp);
-
-  if (!isOtpMatched) throw new BadRequestError("Incorrect otp");
-
-  user.otp = undefined;
-  user.otpExpiry = undefined;
-
-  const resetToken = await user.generateResetToken();
-  user.resetToken = resetToken;
-  await user.save();
-
+  const user = await authServices.verifyOtp(email, otp);
   sendResponse(res, user, "Otp verified succesfully");
 });
 
-export const forgotPasswordResetPasswordApi = asyncHandler(async (req, res) => {
+export const forgotPasswordResetPassword = asyncHandler(async (req, res) => {
   const { resetToken, password } = req.body;
-  const resetTokenSecret = config.get<string>("RESET_TOKEN_SECRET");
-
-  let decoded;
-  try {
-    decoded = jwt.verify(resetToken, resetTokenSecret) as { userId: string };
-  } catch (error) {
-    throw new BadRequestError("Invalid or expired reset token");
-  }
-
-  const user = await User.findById(decoded.userId).select("+resetToken");
-  if(!user || !user.isActive){
-    throw new UnauthorizedError("Your account has been blocked! you can't change password.")
-  }
-
-  if(user.resetToken !== resetToken){
-    throw new BadRequestError("Invalid or expired reset token");
-  }
-
-  user.password = password;
-  user.resetToken = undefined;
-  await user.save();
+  const user = await authServices.resetPassword(resetToken, password);
 
   sendResponse(res, user, "Password reset successful");
-
 });
 
-export const forgotPasswordResendOtpApi = asyncHandler(async (req, res) => {
-  const {email} = req.body;
+export const forgotPasswordResendOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
-  const user = await User.findOne({email})
+  await authServices.resendOtp(email);
 
-  if(!user) throw new BadRequestError("Invalid email address")
+  sendResponse(res, undefined, "OTP resend succesfully!");
+});
 
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      await user.hashOtp(otp);
-
-      user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min
-
-      await user.save();
-
-      await sendEmail({
-        to: user.email,
-        subject: "Password Reset OTP",
-        text: `Your OTP for password reset is ${user.otp}. It is valid for 10 minutes.`,
-        html: authEmailTemplates.forgotPasswordRequestEmail(user.fullName, otp),
-      });
-
-      sendResponse(res , undefined, "OTP resend succesfully!")
-  
-  
-})
-
-export const resetPasswordApi = asyncHandler(async (req, res) => {
+export const resetPassword = asyncHandler(async (req, res) => {
   const user = req.user;
-  if(!user) throw new BadRequestError("You must be logged in to reset your password");
+  if (!user)
+    throw new BadRequestError("You must be logged in to reset your password");
 
   // get the curr and new password
   // decode the curr pass if fail throw error else procced
   // save the new password to db
   // invalidate all curr active sessions
   // send email to the user
-  // return success message 
+  // return success message
 });
 
+export const makeStaff = asyncHandler(async (req, res) => {
+  const { fullName, email } = req.body;
 
-export const makeStaffApi = asyncHandler(async (req, res) => {
-  const {fullName, email} = req.body;
+  const user = await authServices.createStaff(fullName, email);
 
-  const user = await User.findOne({email})
+  sendResponse(res, user, "Staff account created successfully");
+});
 
-  if(user){
-    throw new BadRequestError("Staff with this email already exists")
-  }
+export const refreshToken = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
 
+  const { newAccessToken, newRefreshToken } =
+    await authServices.rotateRefreshToken(refreshToken);
 
-  const password = Math.random().toString(36).slice(-8);
+  sendResponse(
+    res,
+    { accessToken: newAccessToken, refreshToken: newRefreshToken },
+    "Token refreshed successfully"
+  );
+});
 
-  const newUser = await User.create({
-    fullName, password, email, role: 'staff', isActive: true, 
-  })
+export const logout = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+  await authServices.logout(refreshToken);
 
-  await sendEmail({
-    to : email,
-    subject : "Staff Account Created",
-    text : `Your staff account has been created. Your login email is ${email} and password is ${password}. Please change your password after logging in.`,
-    html : authEmailTemplates.makeStaffEmail(fullName, email, password)
-  })
-
-  sendResponse(res, newUser, "Staff account created successfully");
+  sendResponse(res, undefined, "Logged out successfully");
 });
