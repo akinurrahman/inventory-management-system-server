@@ -142,3 +142,7 @@ pnpm-workspace.yaml
 
 # copilot
 .github/instructions
+
+# uploaded files temp storage
+public/temp/*
+!public/temp/.gitkeep
