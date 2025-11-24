@@ -1,5 +1,9 @@
 import { Product } from "../../models/product.model";
-import { createPagination, getPaginationParams } from "../../utils";
+import {
+  createPagination,
+  getPaginationParams,
+  NotFoundError,
+} from "../../utils";
 
 export const getAllProducts = async (
   query: Record<string, string | string[]>
@@ -21,5 +25,25 @@ export const getAllProducts = async (
     data: products,
     pagination,
     message: "Products fetched successfully!",
+  };
+};
+
+export const getProductById = async (id: string) => {
+  const product = await Product.findById(id).populate("supplierIds").lean();
+
+  if (!product) {
+    throw new NotFoundError("Product not found");
+  }
+
+  const { supplierIds, ...rest } = product;
+
+  const transformed = {
+    ...rest,
+    suppliers: supplierIds,
+  };
+
+  return {
+    data: transformed,
+    message: "Product fetched successfully!",
   };
 };

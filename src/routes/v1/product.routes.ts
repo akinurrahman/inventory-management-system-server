@@ -23,6 +23,10 @@ router
 
 router
   .route("/:id")
+  .get(
+    authMiddleware.requireRoles(["admin", "staff"]),
+    productController.getProductById
+  )
   .patch(
     authMiddleware.requireRoles(["admin", "staff"]),
     validateBody(productValidators.productSchema.partial()),

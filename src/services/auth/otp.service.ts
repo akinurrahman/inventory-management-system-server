@@ -39,7 +39,7 @@ export async function verifyOtp(email: string, otp: string) {
   user.resetToken = resetToken;
   await user.save();
 
-  return user;
+  return { resetToken };
 }
 
 export async function resendOtp(email: string) {

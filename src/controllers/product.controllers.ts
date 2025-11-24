@@ -29,6 +29,13 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   sendResponse(res, data, message, 200, pagination);
 });
 
+export const getProductById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const product = await productService.getProductById(id);
+  sendResponse(res, product.data, product.message);
+});
+
 export const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
