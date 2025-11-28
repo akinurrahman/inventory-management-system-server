@@ -51,4 +51,8 @@ export const getProductUpdateRequests = asyncHandler(async (req, res) => {
   sendResponse(res, data, message, 200, pagination);
 });
 
-
+export const getProductUpdateRequestById = asyncHandler(async (req, res) => {
+  const { requestId } = req.params;
+  const result = await productService.getProductApprovalRequestById(requestId);
+  sendResponse(res, result.data, result.message);
+});

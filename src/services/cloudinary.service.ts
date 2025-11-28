@@ -5,7 +5,7 @@ import config from 'config'
 const cloudName =  config.get<string>('CLOUDINARY_CLOUD_NAME')
 const apiKey =  config.get<string>('CLOUDINARY_API_KEY')
 const secret =  config.get<string>('CLOUDINARY_API_SECRET')
-const folder = config.get<string>("CLOUDINARY_FOLDER");
+const folder = config.get<string>("CLOUD_FOLDER");
 
 cloudinary.config({
   cloud_name: cloudName,

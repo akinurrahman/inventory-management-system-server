@@ -10,6 +10,20 @@ const router = Router();
 router.use(authMiddleware.requireAuth);
 
 router
+  .route("/requests")
+  .get(
+    authMiddleware.requireRoles(["admin"]),
+    productController.getProductUpdateRequests
+  );
+
+router
+  .route("/requests/:requestId")
+  .get(
+    authMiddleware.requireRoles(["admin"]),
+    productController.getProductUpdateRequestById
+  );
+
+router
   .route("/")
   .post(
     authMiddleware.requireRoles(["admin", "staff"]),
@@ -36,14 +50,5 @@ router
     authMiddleware.requireRoles(["admin"]),
     productController.deleteProduct
   );
-
-router
-  .route("/requests")
-  .get(
-    authMiddleware.requireRoles(["admin"]),
-    productController.getProductUpdateRequests
-  );
-
-
 
 export default router;
