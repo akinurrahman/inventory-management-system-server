@@ -49,10 +49,6 @@ router
     validateBody(authValidation.resetPasswordSchema),
     authController.resetPassword
   )
-  .post(
-    "/make-staff",
-    validateBody(authValidation.makeStaffSchema),
-    authController.makeStaff
-  );
+ 
 
 export default router;

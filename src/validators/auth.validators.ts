@@ -34,10 +34,7 @@ export const resetPasswordSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters long"),
 });;
 
-export const makeStaffSchema = z.object({
-  email: z.email("Invalid email address"),
-  fullName: z.string("Name is required"),
-});
+
 
 export const logoutSchema = z.object({
   refreshToken: z.string().min(1, "Refresh token is required"),
@@ -49,6 +46,5 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordRequestOtpSchema>
 export type ForgotPasswordOtpVerifyInput = z.infer<typeof forgotPasswordVerifyOtpSchema>;
 export type ForgotPasswordResetInput = z.infer<typeof forgotPasswordResetPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
-export type MakeStaffInput = z.infer<typeof makeStaffSchema>;
 export type ForgotPasswordResendOtpInput = z.infer<typeof forgotPasswordResendOtpSchema>;
 export type LogoutInput = z.infer<typeof logoutSchema>;

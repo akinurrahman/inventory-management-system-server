@@ -19,3 +19,9 @@ export enum PRODUCT_CATEGORY {
   TOYS = "toys",
   AUTOMOTIVE = "automotive",
 }
+
+
+export enum USER_ROLE {
+  ADMIN = "admin",
+  OPERATOR = "operator",
+}

@@ -2,12 +2,13 @@ import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import config from "config";
+import { USER_ROLE } from "../constants/enums";
 
 export interface IUser extends Document {
   fullName: string;
   email: string;
   password: string;
-  role: "admin" | "staff";
+  role: USER_ROLE;
   isActive: boolean;
   lastLogin?: Date;
   otp?: string;
@@ -28,7 +29,11 @@ const userSchema = new mongoose.Schema<IUser>(
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true, select: false },
-    role: { type: String, enum: ["admin", "staff"], default: "staff" },
+    role: {
+      type: String,
+      enum: Object.values(USER_ROLE),
+      default: USER_ROLE.OPERATOR,
+    },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date },
 

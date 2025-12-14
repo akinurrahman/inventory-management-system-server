@@ -78,13 +78,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   // return success message
 });
 
-export const makeStaff = asyncHandler(async (req, res) => {
-  const { fullName, email } = req.body;
 
-  const user = await authServices.createStaff(fullName, email);
-
-  sendResponse(res, user, "Staff account created successfully");
-});
 
 export const refreshToken = asyncHandler(async (req, res) => {
   const { refreshToken } = req.body;

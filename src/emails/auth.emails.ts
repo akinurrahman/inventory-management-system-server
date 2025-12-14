@@ -155,10 +155,11 @@ export const forgotPasswordRequestEmail = (name:string, otp:string) => {
 };
 
 
-export const makeStaffEmail = (
+export const makeUserWelcomeEmail = (
   name: string,
   email: string,
-  tempPassword: string
+  tempPassword: string,
+  role: string,
 ) => {
   return `
     <!DOCTYPE html>
@@ -205,6 +206,13 @@ export const makeStaffEmail = (
     .greeting {
       font-weight: 500;
       color: #1a1a1a;
+    }
+    .role {
+      margin: 12px 0 24px;
+      font-size: 14px;
+      color: #4f46e5;
+      font-weight: 600;
+      text-transform: capitalize;
     }
     .otp-section {
       text-align: center;
@@ -289,8 +297,10 @@ export const makeStaffEmail = (
     </div>
     <div class="content">
       <p class="greeting">Hi ${name},</p>
-      <p>We’re thrilled to have you on board! Your staff account has been successfully created. Use the credentials below to log in for the first time:</p>
-      
+      <p class="role">Role: ${role}</p>
+
+      <p>Your account has been successfully created. Use the credentials below to log in for the first time:</p>
+
       <div class="otp-section">
         <div class="otp-label">Your Login Email</div>
         <div class="otp">${email}</div>
@@ -302,15 +312,15 @@ export const makeStaffEmail = (
         <div class="validity">Please change your password immediately after your first login</div>
       </div>
 
-      <p>You can now log in to the staff portal and set a new password. If you experience any login issues, reach out to our support team.</p>
-      
+      <p>If you experience any login issues, reach out to our support team.</p>
+
       <div class="signature">
         <p>Welcome aboard,</p>
-        <p><strong>Akinur Rahman</strong></p>
+        <p><strong>The Team</strong></p>
       </div>
     </div>
     <div class="footer">
-      <p>&copy; ${new Date().getFullYear()} Akinur Rahman. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} All rights reserved.</p>
       <p>Need assistance? <a href="mailto:${contactEmail}">Contact Support</a></p>
     </div>
   </div>
@@ -318,3 +328,4 @@ export const makeStaffEmail = (
 </html>
   `;
 };
+
