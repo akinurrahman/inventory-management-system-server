@@ -1,6 +1,6 @@
 import "dotenv/config";
 import connect from "../config/connect";
-import * as authService from "../services/auth.service";
+import * as authService from "../services/auth/create-admin.service";
 import log from "../utils/logger";
 
 async function seedAdmin() {

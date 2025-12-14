@@ -1,4 +1,4 @@
-import { User } from "../../models/user.mode";
+import { IUser, User } from "../../models/user.mode";
 import {
   BadRequestError,
   createPagination,
@@ -9,6 +9,7 @@ import * as authEmailTemplates from "../../emails/auth.emails";
 import { USER_ROLE } from "../../constants/enums";
 import { pickBy } from "lodash";
 import { MakeUserInput } from "../../validators/user-management.validators";
+import { FilterQuery } from "mongoose";
 
 export async function createUser(
   fullName: string,
@@ -44,9 +45,27 @@ export async function createUser(
 
 export async function getUsers(query: Record<string, string | string[]>) {
   const { page, limit, skip } = getPaginationParams(query);
+  const { search, role } = query;
+
+  const filter: FilterQuery<IUser> = {};
+
+  // search by fullName or email
+  if (typeof search === "string" && search.trim()) {
+    const regex = new RegExp(search.trim(), "i");
+
+    filter.$or = [
+      { fullName: { $regex: regex } },
+      { email: { $regex: regex } },
+    ];
+  }
+
+  // filter by role
+  if (typeof role === "string" && role.trim()) {
+    filter.role = role.trim() as USER_ROLE;
+  }
 
   const [users, total] = await Promise.all([
-    User.find().skip(skip).limit(limit).lean(),
+    User.find(filter).skip(skip).limit(limit).lean(),
     User.countDocuments(),
   ]);
 
