@@ -13,7 +13,7 @@ export const updateProduct = async (
 ) => {
   const updates = pickBy(body, (value: unknown) => value !== undefined);
 
-  if (user.role === "staff") {
+  if (user.role !== "admin") {
     const productUpdateRequest = await ApprovalRequest.create({
       entityType: "Product",
       entityId: id,

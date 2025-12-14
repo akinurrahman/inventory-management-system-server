@@ -7,6 +7,8 @@ import {
 import { sendEmail } from "../email.service";
 import * as authEmailTemplates from "../../emails/auth.emails";
 import { USER_ROLE } from "../../constants/enums";
+import { pickBy } from "lodash";
+import { MakeUserInput } from "../../validators/user-management.validators";
 
 export async function createUser(
   fullName: string,
@@ -58,5 +60,36 @@ export async function getUsers(query: Record<string, string | string[]>) {
     data: users,
     pagination,
     message: "Users fetched successfully!",
+  };
+}
+
+export async function getUserById(id: string) {
+  const user = await User.findById(id).lean();
+  if (!user) throw new BadRequestError("User not found");
+  return {
+    data: user,
+    message: "User fetched successfully!",
+  };
+}
+
+export async function deleteUserById(id: string) {
+  const user = await User.findByIdAndDelete(id).lean();
+  if (!user) throw new BadRequestError("User not found");
+  return {
+    data: user,
+    message: "User deleted successfully!",
+  };
+}
+
+export async function updateUserById(id: string, body: Partial<MakeUserInput>) {
+  const updates = pickBy(body, (value: unknown) => value !== undefined);
+  const user = await User.findByIdAndUpdate(id, updates, {
+    new: true,
+    runValidators: true,
+  }).lean();
+  if (!user) throw new BadRequestError("User not found");
+  return {
+    data: user,
+    message: "User updated successfully!",
   };
 }
