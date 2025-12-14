@@ -5,6 +5,9 @@ import * as userControllers from "../../controllers/user-management.controllers"
 
 const router = Router();
 
-router.route("/").post(validateBody(makeUserSchema), userControllers.makeUser);
+router
+  .route("/")
+  .post(validateBody(makeUserSchema), userControllers.makeUser)
+  .get(userControllers.getAllUsers);
 
 export default router;

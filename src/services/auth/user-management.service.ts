@@ -1,5 +1,9 @@
 import { User } from "../../models/user.mode";
-import { BadRequestError } from "../../utils";
+import {
+  BadRequestError,
+  createPagination,
+  getPaginationParams,
+} from "../../utils";
 import { sendEmail } from "../email.service";
 import * as authEmailTemplates from "../../emails/auth.emails";
 import { USER_ROLE } from "../../constants/enums";
@@ -34,4 +38,25 @@ export async function createUser(
   });
 
   return user;
+}
+
+export async function getUsers(query: Record<string, string | string[]>) {
+  const { page, limit, skip } = getPaginationParams(query);
+
+  const [users, total] = await Promise.all([
+    User.find().skip(skip).limit(limit).lean(),
+    User.countDocuments(),
+  ]);
+
+  const pagination = createPagination({
+    page,
+    limit,
+    total,
+  });
+
+  return {
+    data: users,
+    pagination,
+    message: "Users fetched successfully!",
+  };
 }
