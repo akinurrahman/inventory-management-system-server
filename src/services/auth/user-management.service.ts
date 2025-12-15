@@ -45,9 +45,11 @@ export async function createUser(
 
 export async function getUsers(query: Record<string, string | string[]>) {
   const { page, limit, skip } = getPaginationParams(query);
-  const { search, role } = query;
+  const { search, isActive } = query;
 
-  const filter: FilterQuery<IUser> = {};
+  const filter: FilterQuery<IUser> = {
+    role: { $ne: USER_ROLE.ADMIN },
+  };
 
   // search by fullName or email
   if (typeof search === "string" && search.trim()) {
@@ -59,9 +61,9 @@ export async function getUsers(query: Record<string, string | string[]>) {
     ];
   }
 
-  // filter by role
-  if (typeof role === "string" && role.trim()) {
-    filter.role = role.trim() as USER_ROLE;
+  // filter by isActive status
+  if (typeof isActive === "string" && isActive.trim()) {
+    filter.isActive = isActive.trim() === "true";
   }
 
   const [users, total] = await Promise.all([
@@ -110,5 +112,32 @@ export async function updateUserById(id: string, body: Partial<MakeUserInput>) {
   return {
     data: user,
     message: "User updated successfully!",
+  };
+}
+
+
+export async function blockUserById(id: string) {
+  const user = await User.findByIdAndUpdate(
+    id,
+    { isActive: false },
+    { new: true }
+  ).lean();
+  if (!user) throw new BadRequestError("User not found");
+  return {
+    data: user,
+    message: "User blocked successfully!",
+  };
+}
+
+export async function unblockUserById(id: string) {
+  const user = await User.findByIdAndUpdate(
+    id,
+    { isActive: true },
+    { new: true }
+  ).lean();
+  if (!user) throw new BadRequestError("User not found");
+  return {
+    data: user,
+    message: "User unblocked successfully!",
   };
 }

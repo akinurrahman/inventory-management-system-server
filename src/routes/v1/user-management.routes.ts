@@ -21,4 +21,12 @@ router
   .patch(validateBody(makeUserSchema.partial()), userControllers.updateUserById)
   .delete(userControllers.deleteUserById);
 
+router
+  .route("/:id/block")
+  .patch(userControllers.blockUserById);
+
+router
+  .route("/:id/unblock")
+  .patch(userControllers.unblockUserById);
+
 export default router;
